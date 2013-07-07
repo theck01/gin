@@ -1,0 +1,115 @@
+
+A superhero roguelike, covers the "career" of a superhero, from creation until
+inevitable end or retirement. Superhero is used loosely in this case, as a
+person could just as easily become a villain.
+
+
+POWERS:
+-------
+
+A superhero of course has an array of super powers. Some powers should be unique
+to individual heros (primary powers), others are common to all heros
+(secondary powers), and non-playable but sometimes helpful powers (tertiary
+powers)
+
+A list of proposed primary powers:
+- Flight
+- Telekenisis (a force push/pull)
+- Telekenisis (extended punches, kicks etc)
+- Invisibility
+- Elemental manipulation (fire, earth, wind, water...)
+- Intelligence (gadgetry and traps)
+- Teleportation
+- Cloning
+- Physical mutation (blade hands, iron skin, etc)
+- Energy blast
+- Force field
+- Power mimicry
+- Size increase
+
+A list of proposed secondary powers:
+- Healing Factor (health regen)
+- Speed (attack/movement)
+- Strength (physical attack damage)
+- Will (mental attack damage)
+- Various damage resistances
+
+A list of proposed tertiary powers:
+- Telepathy
+- Super hearing
+- Super sight
+- Intelligence (inventing gadgets, decoding messages/languages)
+
+All powers that a hero has may not be active at once (a level up sort of
+process may unlock new powers, or a scheduled in game event), and proficiency
+in powers increases over time
+
+
+ORIGINS:
+--------
+
+Origins dictate the initial powers (or group of powers) that a hero has, and
+is a way for the player to influence original buildout. Some origins may allow
+for more powers at the expense of increasing individual power strength or vice
+versa. Origins also dictate some of the behind the scenes statistics such as
+"experience Ngain" and resistances.
+
+Significant events in the hero's quest may present the choice of adding new
+powers.
+
+Proposed origins:
+- Mutation
+- Alien raised on earth
+- Cyborg
+- Medical experimentation
+- Accidental radiation exposure
+- Traumatic childhood event
+- Stolen from another hero
+
+
+STORY/GAME SEQUENCE:
+--------------------
+
+Because this game is intended to be a "roguelike", there should be no set story,
+instead there should be a "build your own" sort of vibe, where ultimate success
+can range from "forged the world into a peaceful utopia" to "dominated the 
+populus for years under an iron will" (both not the "most good" ending).
+
+A list of potential events can occur in any playthrough, after playing some
+number and reaching a "final conflict" the game ends for that character, having
+bested all that could be encountered at that time. Characters making it to this
+point enter infamy, and could be mentioned (or even encountered) in subsequent
+playthroughs.
+
+Proposed events (and outcomes):
+- Origin
+  * Obtain superpowers, decide to support or forgo any organizations
+- Alien invasion
+  * Bring peace after initial attack
+  * Destroy alien invasion force completely as a message to future forces
+  * Convince alien force to assist with later missions, if applicable
+- Natural Disaster (hurricane, tsunami, volcano):
+  * Avert the disaster from population centers
+  * Save as many citizens directly
+  * Maximize damage to area for self-gain
+- Small time crime (bank robbery, hostage situation, etc.):
+  * Help bring criminals to justice
+  * Kill criminals in the act
+    + Possibly complete crime for own gain
+  * Assist criminals escaping the law
+- City takeover:
+  * Prevent takeover in progress, or liberate city after takeover has already
+    occured
+    + Bring offenders to justice
+    + Kill offenders
+  * Takeover innocent city single handedly
+- Rogue villan or hero (a boss style battle):
+  * Destroy one or more super powers with the help of zero or more others
+
+Events could be arranged on a city map, after some percentage of the map is
+converted to an alliance (good, evil, neutral, etc) a final battle would be
+enabled/initiated that would dictate the success atkeeping the city in that
+alliance. Game ends after the battle.
+
+A more complex set of critera could be met for game end, enabling endings for
+more than just "good" or "evil"
