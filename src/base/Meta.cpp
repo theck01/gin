@@ -1,4 +1,4 @@
-#include "../../include/base/meta.hpp"
+#include "../../include/base/Meta.hpp"
 
 base::Meta::Meta(){
   references = 1;
@@ -17,6 +17,6 @@ base::Meta * base::Meta::retain(){
   return this;
 }
 
-uint32_t base::Meta::referenceCount(){
+uint32_t base::Meta::referenceCount() const{
   return references;
 }

@@ -1,4 +1,4 @@
-#include "../../include/base/meta.hpp"
+#include "../../include/base/Meta.hpp"
 
 int main(){
 
@@ -14,6 +14,6 @@ int main(){
 
   assert(a->release() == NULL);
 
-  std::cout << "Meta: TESTS PASSED" << std::endl;
+  std::cout << "base::Meta -- TESTS PASSED" << std::endl;
 }
 

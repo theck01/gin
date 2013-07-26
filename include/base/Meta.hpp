@@ -1,5 +1,5 @@
-#ifndef GAME_META_HPP
-#define GAME_META_HPP
+#ifndef BASE_META_HPP
+#define BASE_META_HPP
 
 #include "../stdlibs.hpp"
 
@@ -15,7 +15,7 @@ class base::Meta {
     Meta();
     base::Meta * release();
     base::Meta * retain();
-    uint32_t referenceCount();
+    uint32_t referenceCount() const;
 };
 
 #endif
