@@ -1,1 +1,1 @@
-A superhero roguelike game written in C++
+A 2D game engine written in C++
