@@ -4,31 +4,23 @@
 # after removing compiled objects and cloning in git
 
 
-mesgstr="Made"
+mesgstr="Setup"
+folders=(bin bin/base bin/geom bin/tests bin/tests/base bin/tests/geom)
 
-# check for directories, make non-existant
-if [[ ! -d "bin" ]]
-then
-  mkdir bin
-  mesgstr="$mesgstr bin"
-fi
-
-if [[ ! -d "bin/base" ]]
-then
-  mkdir bin/base
-  mesgstr="$mesgstr bin/base"
-fi
-
-if [[ ! -d "bin/tests" ]]
-then
-  mkdir bin/tests
-  mesgstr="$mesgstr bin/tests"
-fi
+# for each folder, check if present, if not make it
+for f in ${folders[*]}
+do
+  if [[ ! -d "$f" ]]
+  then
+    mkdir "$f"
+    mesgstr+=" $f"
+  fi
+done
 
 # print result message
-if [[ "$mesgstr" == "Made" ]]
+if [[ "$mesgstr" == "Setup" ]]
 then
-  echo "bin/ directories present"
+  echo "bin/ directory tree present"
 else
   echo "$mesgstr directories"
 fi
