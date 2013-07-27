@@ -25,19 +25,19 @@ then
   echo "$1 is not a valid directory"
 fi
 
-test_run=0
 
 for test in $(ls $1)
 do
   test_path="$(dirname $1)/$(basename $1)/$test"
-  if [[ -x $test_path ]] && [[ ! -d $test_path ]]
+  if [[ -x $test_path ]] 
   then
-    test_run=1
-    $(dirname $1)/$(basename $1)/$test
+		# if the file is not a directory, run it
+		if [[ ! -d $test_path ]]
+		then
+			$(dirname $1)/$(basename $1)/$test
+		# if the file is a directory, recursivly call self on that directory
+		else
+			$0 $test_path
+		fi
   fi
 done
-
-if [[ $test_run -eq 0 ]]
-then
-  echo "No tests found in $1"
-fi
