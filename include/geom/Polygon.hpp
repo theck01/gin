@@ -10,8 +10,7 @@ namespace geom {
 }
 
 class geom::Polygon: public base::Meta {
-  public:
-  //private:
+  private:
     geom::Point bbox[2];
     geom::Point *points;
     uint32_t num_points;
@@ -26,7 +25,7 @@ class geom::Polygon: public base::Meta {
     double signed_area() const;
 
 
-  //public:
+  public:
     // Constructor, builds polygon from an array of points
     Polygon(const geom::Point parray[], uint32_t point_count);
 
