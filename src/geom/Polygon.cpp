@@ -65,6 +65,29 @@ double geom::Polygon::area() const{
 }
 
 
+geom::Point * geom::Polygon::center() const{
+  geom::Point *p = new Point();
+  center(p);
+  return p;
+}
+
+
+void geom::Polygon::center(geom::Point *p) const{
+  
+  uint32_t i;
+  double x_avg = 0;
+  double y_avg = 0;
+
+  for(i=0; i<num_points; i++){
+    x_avg += points[i].x;
+    y_avg += points[i].y;
+  }
+
+  p->x = x_avg/num_points;
+  p->y = y_avg/num_points;
+}
+
+
 bool geom::Polygon::contains(const geom::Point *p) const{
   return contains(p->x, p->y);
 }

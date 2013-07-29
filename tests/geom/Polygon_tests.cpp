@@ -6,6 +6,7 @@ int main(){
   geom::Polygon *square, *triangle, *p;
   geom::Point square_points[4];
   geom::Point triangle_points[4];
+  geom::Point *center;
 
   // initialize points arrays
   square_points[0].x = 0;
@@ -30,6 +31,17 @@ int main(){
   // test area method, with some padding to accomadate for the double result
   assert(abs(square->area() - 1) < 0.001);
   assert(abs(triangle->area() - 0.5) < 0.001);
+
+  // test the center method
+  center =  square->center();
+  assert(center->x > 0.499 && center->x < 0.501 && center->y > 0.499 &&
+         center->y < 0.501);
+  center->release();
+
+  center =  triangle->center();
+  assert(center->x > -1.501 && center->x < -1.499 && center->y > 0.332 &&
+         center->y < 0.334);
+  center->release();
 
   // test contains method (direct cordinates only rather than point
   assert(square->contains(0.5,0.5));
@@ -83,6 +95,11 @@ int main(){
   assert(square->overlaps(triangle));
   assert(!square->overlaps(p));
   assert(!p->overlaps(triangle));
+
+  // memory cleanup
+  p->release();
+  square->release();
+  triangle->release();
 
   // tests completed
   std::cout << "geom::Polygon -- TESTS PASSED" << std::endl;

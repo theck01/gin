@@ -39,6 +39,11 @@ class geom::Polygon: public base::Meta {
     // returns the area captured by the polygon
     double area() const;
 
+    // returns the center of area for the polygon, or updates the provided
+    // point to the center
+    geom::Point * center() const;
+    void center(geom::Point *p) const;
+
     // returns true if the Polygon contains the point p (or x, y coordinates)
     bool contains(const geom::Point *p) const;
     bool contains(double x, double y) const;
