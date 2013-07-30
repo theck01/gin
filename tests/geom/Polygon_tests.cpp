@@ -1,5 +1,4 @@
 #include "../../include/geom/Polygon.hpp"
-#include "../../include/geom/Point.hpp"
 
 int main(){
   
