@@ -4,6 +4,10 @@ base::Meta::Meta(){
   references = 1;
 }
 
+base::Meta::~Meta(){
+  return;
+}
+
 base::Meta * base::Meta::release(){
   if(--references == 0){
     delete this;

@@ -13,9 +13,11 @@ class base::Meta {
 
   public:
     Meta();
+    virtual ~Meta();
     base::Meta * release();
     base::Meta * retain();
     uint32_t referenceCount() const;
+
 };
 
 #endif
