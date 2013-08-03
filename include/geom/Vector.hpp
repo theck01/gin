@@ -40,11 +40,16 @@ class geom::Vector: public base::Meta {
     // return the angle of the vector in radians
     double angle() const;
 
+    // return the angle between this vector and the arguement vector, in
+    // radians from the horizon of this vector
+    double angle_between(const geom::Vector *v) const;
+
     // return the cross product with another vector, the magnitude in the
-    // z direction, self x v
+    // z direction, assuming both vectors have the same origin
     double cross(const geom::Vector *v) const;
 
-    // return the dot product with another vector
+    // return the dot product with another vector, assuming both vectors
+    // have the same origin
     double dot(const geom::Vector *v) const;
 
     // return the endpoint of the vector
@@ -53,6 +58,9 @@ class geom::Vector: public base::Meta {
 
     // return the magnitude of the vector
     double magnitude() const;
+
+    // print the vector to stderr, for display
+    void print() const;
 
     // return the vector projection of self onto v
     geom::Vector * projection(const geom::Vector *v) const;

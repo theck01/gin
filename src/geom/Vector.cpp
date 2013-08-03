@@ -63,8 +63,8 @@ geom::Vector * geom::Vector::add(const geom::Vector *v) const{
 void geom::Vector::add(const geom::Vector *v, geom::Vector *result) const{
   result->origin.x = origin.x;
   result->origin.y = origin.y;
-  result->unit.x = unit.x*size + v->unit.x*result->size;
-  result->unit.y = unit.y*size + v->unit.y*result->size;
+  result->unit.x = unit.x*size + v->unit.x*v->size;
+  result->unit.y = unit.y*size + v->unit.y*v->size;
   result->size = result->unitize();
 }
 
@@ -75,15 +75,20 @@ double geom::Vector::angle() const{
 }
 
 
+double geom::Vector::angle_between(const geom::Vector *v) const{
+  return acos(dot(v)/(magnitude()*v->magnitude()));
+}
+
+
 double geom::Vector::cross(const geom::Vector *v) const{
-  return (origin.x * size * v->origin.y * v->size) - 
-         (origin.y * size * v->origin.x * v->size);
+  return (unit.x * size * v->unit.y * v->size) - 
+         (unit.y * size * v->unit.x * v->size);
 }
 
 
 double geom::Vector::dot(const geom::Vector *v) const{
-  return (origin.x * size * v->origin.x * v->size) + 
-         (origin.y * size * v->origin.y * v->size);
+  return (unit.x * size * v->unit.x * v->size) + 
+         (unit.y * size * v->unit.y * v->size);
 }
 
 
@@ -93,7 +98,6 @@ geom::Point * geom::Vector::endpoint() const{
   return p;
 }
 
-
 void geom::Vector::endpoint(geom::Point *p) const{
   p->x = origin.x + unit.x*size;
   p->y = origin.y + unit.y*size;
@@ -102,6 +106,15 @@ void geom::Vector::endpoint(geom::Point *p) const{
 
 double geom::Vector::magnitude() const{
   return size;
+}
+
+
+void geom::Vector::print() const{
+  std::cerr << "Vector:" << std::endl;
+  std::cerr << "    origin: (" << origin.x << "," << origin.y << ")";
+  std::cerr << std::endl;
+  std::cerr << "    angle: " << angle()  << " rad" << std::endl;
+  std::cerr << "    magnitude: " << magnitude()  << std::endl;
 }
 
 
@@ -152,8 +165,8 @@ geom::Vector * geom::Vector::sub(const geom::Vector *v) const{
 void geom::Vector::sub(const geom::Vector *v, geom::Vector *result) const{
   result->origin.x = origin.x;
   result->origin.y = origin.y;
-  result->unit.x = unit.x*size - v->unit.x*result->size;
-  result->unit.y = unit.y*size - v->unit.y*result->size;
+  result->unit.x = unit.x*size - v->unit.x*v->size;
+  result->unit.y = unit.y*size - v->unit.y*v->size;
   result->size = result->unitize();
 }
 
