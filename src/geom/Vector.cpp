@@ -1,21 +1,21 @@
 #include "../../include/geom/Vector.hpp"
 
-void geom::Vector::init(double x, double y, double u, double v, double mag){
-  origin.x = x;
-  origin.y = y;
-  unit.x = u;
-  unit.y = v;
-  if(u == 0 && v == 0) unit.x = 1; // ensure that there is some direction
-  size = mag;
-  unitize();
+void geom::Vector::init(double x0, double y0, double x1, double y1){
+  geom::Point p;
+  p.x = x0;
+  p.y = y0;
+  double angle = atan((y1-y0)/(x1-x0));
+  double magnitude = sqrt((y1-y0)*(y1-y0) + (x1-x0)*(x1-x0));
+  init(&p, angle, magnitude);
 }
 
 
-void geom::Vector::init(double x, double y, double angle, double mag){
-  double u, v;
-  u = cos(angle);
-  v = sin(angle);
-  init(x,y,u,v,mag);
+void geom::Vector::init(const geom::Point *o, double angle, double mag){
+  origin.x = o->x;
+  origin.y = o->y;
+  unit.x = cos(angle);
+  unit.y = sin(angle);
+  size = mag;
 }
 
 
@@ -27,34 +27,28 @@ double geom::Vector::unitize(){
 }
 
 
-geom::Vector::Vector(const geom::Point *o, const geom::Point *dir, 
-                     double mag){
-  init(o->x, o->y, dir->x, dir->y, mag);
+geom::Vector::Vector(const geom::Point *o, const geom::Point *endpoint){
+  init(o->x, o->y, endpoint->x, endpoint->y);
+}
+
+
+geom::Vector::Vector(double x0, double y0, double x1, double y1){
+  init(x0, y0, x1, y1);
 }
 
 
 geom::Vector::Vector(const geom::Point *o, double angle, double mag){
-  init(o->x, o->y, angle, mag);
-}
-
-
-geom::Vector::Vector(double x, double y, double u, double v, double mag){
-  init(x, y, u, v, mag);
-}
-
-
-geom::Vector::Vector(double x, double y, double angle, double mag){
-  init(x, y, angle, mag);
+  init(o, angle, mag);
 }
 
 
 geom::Vector::Vector(const geom::Vector *v){
-  init(v->origin.x, v->origin.y, v->unit.x, v->unit.y, v->size);
+  init(v->origin.x, v->origin.y, v->unit.x*v->size, v->unit.y*v->size);
 }
 
 
 geom::Vector * geom::Vector::add(const geom::Vector *v) const{
-  geom::Vector *result = new Vector(0,0,0,0,0);
+  geom::Vector *result = new Vector(0,0,0,0);
   add(v, result);
   return result;
 }
@@ -119,7 +113,7 @@ void geom::Vector::print() const{
 
 
 geom::Vector * geom::Vector::projection(const geom::Vector *v) const{
-  geom::Vector *result = new Vector(0,0,0,0,0);
+  geom::Vector *result = new Vector(0,0,0,0);
   projection(v, result);
   return result;
 }
@@ -156,7 +150,7 @@ void geom::Vector::scale(double factor){
 
 
 geom::Vector * geom::Vector::sub(const geom::Vector *v) const{
-  geom::Vector *result = new Vector(0,0,0,0,0);
+  geom::Vector *result = new Vector(0,0,0,0);
   sub(v, result);
   return result;
 }

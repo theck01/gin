@@ -10,26 +10,24 @@ namespace geom {
 }
 
 class geom::Vector: public base::Meta {
-  public:
-  //private:
+  private:
     geom::Point origin;
     geom::Point unit;
     double size;
 
     // init method, common to all constructors, angle in radians
-    void init(double x, double y, double u, double v, double mag);
-    void init(double x, double y, double angle, double mag);
+    void init(double x0, double y0, double x1, double y1);
+    void init(const geom::Point *o, double angle, double mag);
 
     // ensure that the unit is actually a unit vector, returning the sizing
     // factor
     double unitize();
 
-  //public:
+  public:
     // Constructors, angle in radians
-    Vector(const geom::Point *o, const geom::Point *dir, double mag);
+    Vector(const geom::Point *o, const geom::Point *endpoint);
+    Vector(double x0, double y0, double x1, double y1);
     Vector(const geom::Point *o, double angle, double mag);
-    Vector(double x, double y, double u, double v, double mag);
-    Vector(double x, double y, double angle, double mag);
     Vector(const geom::Vector *v);
 
     // add the given vector to self, as if that vector also originated at the
@@ -59,7 +57,7 @@ class geom::Vector: public base::Meta {
     // return the magnitude of the vector
     double magnitude() const;
 
-    // print the vector to stderr, for display
+    // print the vector to stderr, for debug
     void print() const;
 
     // return the vector projection of self onto v

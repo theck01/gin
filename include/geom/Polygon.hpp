@@ -11,12 +11,17 @@ namespace geom {
 
 class geom::Polygon: public base::Meta {
   private:
+    mutable double area_cached;
+    mutable geom::Point center_cached;
     geom::Point bbox[2];
     geom::Point *points;
     uint32_t num_points;
 
     // generates/updates internal bounding box of the polygon
     void bound();
+
+    // sets cached values to impossible states
+    void clear_cache();
 
     // initializes object after creation
     void init(const geom::Point parray[], uint32_t point_count);
@@ -52,13 +57,25 @@ class geom::Polygon: public base::Meta {
     int8_t orientation() const;
 
     // returns true if the Polygon and argument Polygon p overlap
-    bool overlaps(const geom::Polygon *p) const;
+    bool intersects(const geom::Polygon *p) const;
 
+    // print the polygon to stderr, for debug
+    void print() const;
+
+    // rotate about center of area by rad radians
+    void rotate(double rad);
     // rotates the polygon about center (or x, y coordinates) by rad radians
     void rotate(const geom::Point *center, double rad);
     void rotate(double x, double y, double rad);
 
-    // translates the polygon by x and y
+    // scale about the center of area by given factor 
+    void scale(double factor);
+    // scale about the supplied center by given factor 
+    void scale(const geom::Point *center, double factor);
+    void scale(double x, double y, double factor);
+
+    // translates the polygon by x and y or value stored in point
+    void translate(const geom::Point *shift);
     void translate(double x, double y);
 };
 

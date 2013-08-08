@@ -65,6 +65,23 @@ int main(){
   assert(triangle->contains(-0.5,0.5));
   assert(abs(triangle->area() - 0.5) < 0.001);
 
+  // test scaling
+  assert(!square->contains(-0.1,-0.1));
+  assert(!square->contains(1.1,1.1));
+
+  square->scale(2);
+
+  assert(square->contains(-0.1,-0.1));
+  assert(!square->contains(-0.6,-0.6));
+  assert(square->contains(1.1,1.1));
+  assert(!square->contains(1.6,1.6));
+
+  square->scale(0.5);
+
+  assert(!square->contains(-0.1,-0.1));
+  assert(!square->contains(1.1,1.1));
+
+
   // test rotation
   square->rotate(0.5, 0.5, M_PI/2);
   assert(square->contains(0.5,0.5));
@@ -82,18 +99,18 @@ int main(){
   assert(!square->contains(-0.01,-0.5));
   assert(abs(square->area() - 1) < 0.001);
 
-  // test overlap
-  assert(!square->overlaps(triangle));
+  // test intersects
+  assert(!square->intersects(triangle));
   square->translate(-0.5, 0.5);
-  assert(square->overlaps(triangle));
+  assert(square->intersects(triangle));
 
   // test copy
   p = new geom::Polygon(square);
   assert(abs(p->area() - 1) < 0.001);
   p->translate(10,10);
-  assert(square->overlaps(triangle));
-  assert(!square->overlaps(p));
-  assert(!p->overlaps(triangle));
+  assert(square->intersects(triangle));
+  assert(!square->intersects(p));
+  assert(!p->intersects(triangle));
 
   // memory cleanup
   p->release();

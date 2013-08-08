@@ -4,9 +4,13 @@ int main(){
 
   geom::Vector *v1, *v2, *result;
   geom::Point p;
+  geom::Point origin;
+
+  origin.x = 0;
+  origin.y = 0;
 
   // create a new vector at origin (0,0) with angle PI/4 rad, and magnitude 5 
-  v1 = new geom::Vector(0, 0, 3, 3, 5);
+  v1 = new geom::Vector(&origin, M_PI/4, 5);
 
 
   // test angle
@@ -47,10 +51,10 @@ int main(){
 
   // create a new vector at origin (0,0) with angle PI/4 rad, and magnitude 5 
   v1->release();
-  v1 = new geom::Vector(0, 0, 3, 3, 5);
+  v1 = new geom::Vector(&origin, M_PI/4, 5);
 
-  // create a new vector at origin (1,1) with angle 0 rad, and magnitude 3
-  v2 = new geom::Vector(0, 0, 0, 5);
+  // create a new vector at origin (0,0) with angle 0 rad, and magnitude 5
+  v2 = new geom::Vector(0, 0, 5, 0);
 
   // test add
   result = v1->add(v2);

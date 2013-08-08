@@ -1,4 +1,5 @@
 #include "../../include/geom/Polygon.hpp"
+#include "../../include/geom/Vector.hpp"
 
 void geom::Polygon::bound(){
   
@@ -18,9 +19,18 @@ void geom::Polygon::bound(){
 }
 
 
+void geom::Polygon::clear_cache(){
+  area_cached = INFINITY;
+  center_cached.x = INFINITY;
+  center_cached.y = INFINITY;
+}
+
 void geom::Polygon::init(const geom::Point parray[], uint32_t point_count){
 
   uint32_t i;
+
+  // initialize cache values by clearing garbage
+  clear_cache();
 
   num_points = point_count;
   points = new geom::Point[num_points];
@@ -34,14 +44,20 @@ void geom::Polygon::init(const geom::Point parray[], uint32_t point_count){
 
 
 double geom::Polygon::signed_area() const{
+
   uint32_t i;
   double sum = 0;
+
+  if(area_cached != INFINITY) return area_cached;
 
   for(i=0; i<num_points-1; i++)
     sum += points[i].x*points[i+1].y - points[i+1].x*points[i].y;
 
   sum += points[i].x*points[0].y - points[0].x*points[i].y;
-  return sum/2;
+
+  // update cache
+  area_cached = sum/2;
+  return signed_area();
 }
 
 
@@ -75,16 +91,32 @@ geom::Point * geom::Polygon::center() const{
 void geom::Polygon::center(geom::Point *p) const{
   
   uint32_t i;
-  double x_avg = 0;
-  double y_avg = 0;
+  double x_sum = 0;
+  double y_sum = 0;
+  double intermediate = 0;
 
-  for(i=0; i<num_points; i++){
-    x_avg += points[i].x;
-    y_avg += points[i].y;
+  // return cached value if possible
+  if(center_cached.x < INFINITY || center_cached.y < INFINITY){
+    p->x = center_cached.x;
+    p->y = center_cached.y;
+    return;
   }
 
-  p->x = x_avg/num_points;
-  p->y = y_avg/num_points;
+  for(i=0; i<num_points-1; i++){
+    intermediate = points[i].x*points[i+1].y - points[i+1].x*points[i].y;
+    x_sum += (points[i].x + points[i+1].x)*intermediate;
+    y_sum += (points[i].y + points[i+1].y)*intermediate;
+  }
+  
+  intermediate = points[i].x*points[0].y - points[0].x*points[i].y;
+  x_sum += (points[i].x + points[0].x)*intermediate;
+  y_sum += (points[i].y + points[0].y)*intermediate;
+
+  // update cache
+  center_cached.x = x_sum/(6*signed_area());
+  center_cached.y = y_sum/(6*signed_area());
+
+  center(p);
 }
 
 
@@ -138,12 +170,30 @@ int8_t geom::Polygon::orientation() const{
 }
 
 
-bool geom::Polygon::overlaps(const geom::Polygon *p) const{
+bool geom::Polygon::intersects(const geom::Polygon *p) const{
   uint32_t i;
   for(i=0; i<num_points; i++){
     if(p->contains(&(points[i]))) return true;
   }
   return false;
+}
+
+
+void geom::Polygon::print() const{
+  uint32_t i;
+  std::cerr << "Polygon:" << std::endl;
+  std::cerr << "    points:" << std::endl;
+  for(i=0; i<num_points; i++){
+    std::cerr << "    (" << points[i].x << "," << points[i].y << ")";
+    std::cerr << std::endl;  
+  }
+}
+
+
+void geom::Polygon::rotate(double rad){
+  geom::Point p;
+  center(&p);
+  rotate(p.x, p.y, rad);
 }
 
 
@@ -153,6 +203,7 @@ void geom::Polygon::rotate(const geom::Point *center, double rad){
 
 
 void geom::Polygon::rotate(double x, double y, double rad){
+
   uint32_t i;
   double rx, ry, sine, cosine;
 
@@ -167,6 +218,35 @@ void geom::Polygon::rotate(double x, double y, double rad){
   }
   
   bound();
+  clear_cache();
+}
+
+
+void geom::Polygon::scale(double factor){
+  geom::Point p;
+  center(&p);
+  scale(&p, factor);
+}
+
+
+void geom::Polygon::scale(const geom::Point *center, double factor){
+  scale(center->x, center->y, factor);
+}
+
+
+void geom::Polygon::scale(double x, double y, double factor){
+  uint32_t i;
+  for(i=0; i<num_points; i++){
+    points[i].x = factor*(points[i].x - x) + x;
+    points[i].y = factor*(points[i].y - y) + y;
+  }
+  bound();
+  clear_cache();
+}
+
+
+void geom::Polygon::translate(const geom::Point *shift){
+  translate(shift->x, shift->y);
 }
 
 
@@ -177,4 +257,5 @@ void geom::Polygon::translate(double x, double y){
     points[i].y += y;
   }
   bound();
+  clear_cache();
 }
