@@ -194,6 +194,10 @@ void geom::Polygon::rotate(double rad){
   geom::Point p;
   center(&p);
   rotate(p.x, p.y, rad);
+
+  // update cache
+  center_cached.x = p.x;
+  center_cached.y = p.y;
 }
 
 
@@ -206,6 +210,7 @@ void geom::Polygon::rotate(double x, double y, double rad){
 
   uint32_t i;
   double rx, ry, sine, cosine;
+  double a = area_cached;
 
   sine = sin(rad);
   cosine = cos(rad);
@@ -219,13 +224,20 @@ void geom::Polygon::rotate(double x, double y, double rad){
   
   bound();
   clear_cache();
+  a = area_cached;
 }
 
 
 void geom::Polygon::scale(double factor){
+  double a = area_cached;
   geom::Point p;
   center(&p);
   scale(&p, factor);
+
+  // update cache
+  area_cached = a*factor*factor;
+  center_cached.x = p.x;
+  center_cached.y = p.y;
 }
 
 
@@ -256,6 +268,14 @@ void geom::Polygon::translate(double x, double y){
     points[i].x += x;
     points[i].y += y;
   }
-  bound();
-  clear_cache();
+
+  // translate bounding box
+  bbox[0].x += x;
+  bbox[1].x += x;
+  bbox[0].y += y;
+  bbox[1].y += y;
+
+  // translate cached center, area is unaffected
+  center_cached.x += x;
+  center_cached.y += y;
 }
