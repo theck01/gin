@@ -98,7 +98,7 @@ void geom::Polygon::bounding_box(geom::Rectangle *r) const{
 
 
 geom::Point * geom::Polygon::center() const{
-  geom::Point *p = new Point();
+  geom::Point *p = new geom::Point();
   center(p);
   return p;
 }

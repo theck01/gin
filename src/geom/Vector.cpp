@@ -87,7 +87,7 @@ double geom::Vector::dot(const geom::Vector *v) const{
 
 
 geom::Point * geom::Vector::endpoint() const{
-  geom::Point *p = new Point();
+  geom::Point *p = new geom::Point();
   endpoint(p);
   return p;
 }
