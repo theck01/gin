@@ -6,6 +6,7 @@ int main(){
   geom::Point square_points[4];
   geom::Point triangle_points[4];
   geom::Point *center;
+  geom::Rectangle bbox;
 
   // initialize points arrays
   square_points[0].x = 0;
@@ -30,6 +31,13 @@ int main(){
   // test area method, with some padding to accomadate for the double result
   assert(abs(square->area() - 1) < 0.001);
   assert(abs(triangle->area() - 0.5) < 0.001);
+
+  // test bounding box method
+  square->bounding_box(&bbox);
+  assert(fabs(bbox.bot_left.x) < 0.001);
+  assert(fabs(bbox.bot_left.y) < 0.001);
+  assert(fabs(bbox.top_right.x - 1) < 0.001);
+  assert(fabs(bbox.top_right.y - 1) < 0.001);
 
   // test the center method
   center =  square->center();
