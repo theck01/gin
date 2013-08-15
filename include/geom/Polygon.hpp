@@ -4,6 +4,7 @@
 #include "../stdlibs.hpp"
 #include "../base/Meta.hpp"
 #include "../geom/Point.hpp"
+#include "../geom/Rectangle.hpp"
 
 namespace geom {
   class Polygon;
@@ -13,11 +14,11 @@ class geom::Polygon: public base::Meta {
   private:
     mutable double area_cached;
     mutable geom::Point center_cached;
-    geom::Point bbox[2];
+    geom::Rectangle bbox;
     geom::Point *points;
     uint32_t num_points;
 
-    // generates/updates internal bounding box of the polygon
+    // updates the internal bounding box of the polygon
     void bound();
 
     // sets cached values to impossible states

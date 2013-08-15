@@ -5,16 +5,16 @@ void geom::Polygon::bound(){
   
   uint32_t i;
 
-  bbox[0].x = INFINITY;
-  bbox[0].y = INFINITY;
-  bbox[1].x = -INFINITY;
-  bbox[1].y = -INFINITY;
+  bbox.bot_left.x = INFINITY;
+  bbox.bot_left.y = INFINITY;
+  bbox.top_right.x = -INFINITY;
+  bbox.top_right.y = -INFINITY;
 
   for(i=0; i<num_points; i++){
-    if(bbox[0].x > points[i].x) bbox[0].x = points[i].x;
-    if(bbox[0].y > points[i].y) bbox[0].y = points[i].y;
-    if(bbox[1].x < points[i].x) bbox[1].x = points[i].x;
-    if(bbox[1].y < points[i].y) bbox[1].y = points[i].y;
+    if(bbox.bot_left.x > points[i].x) bbox.bot_left.x = points[i].x;
+    if(bbox.bot_left.y > points[i].y) bbox.bot_left.y = points[i].y;
+    if(bbox.top_right.x < points[i].x) bbox.top_right.x = points[i].x;
+    if(bbox.top_right.y < points[i].y) bbox.top_right.y = points[i].y;
   }
 }
 
@@ -24,6 +24,7 @@ void geom::Polygon::clear_cache(){
   center_cached.x = INFINITY;
   center_cached.y = INFINITY;
 }
+
 
 void geom::Polygon::init(const geom::Point parray[], uint32_t point_count){
 
@@ -131,8 +132,8 @@ bool geom::Polygon::contains(double x, double y) const{
   double slope, x_at_y;
 
   // quick bounding box check
-  if(x < bbox[0].x || y < bbox[0].y || x > bbox[1].x ||
-     y > bbox[1].y){
+  if(x < bbox.bot_left.x || y < bbox.bot_left.y || x > bbox.top_right.x ||
+     y > bbox.top_right.y){
     return false;
   }
 
@@ -270,10 +271,10 @@ void geom::Polygon::translate(double x, double y){
   }
 
   // translate bounding box
-  bbox[0].x += x;
-  bbox[1].x += x;
-  bbox[0].y += y;
-  bbox[1].y += y;
+  bbox.bot_left.x += x;
+  bbox.top_right.x += x;
+  bbox.bot_left.y += y;
+  bbox.top_right.y += y;
 
   // translate cached center, area is unaffected
   center_cached.x += x;
