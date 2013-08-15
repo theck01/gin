@@ -82,6 +82,21 @@ double geom::Polygon::area() const{
 }
 
 
+geom::Rectangle * geom::Polygon::bounding_box() const{
+  geom::Rectangle *r = new geom::Rectangle();
+  bounding_box(r);
+  return r;
+}
+
+
+void geom::Polygon::bounding_box(geom::Rectangle *r) const{
+  r->bot_left.x = bbox.bot_left.x;
+  r->bot_left.y = bbox.bot_left.y;
+  r->top_right.x = bbox.top_right.x;
+  r->top_right.y = bbox.top_right.y;
+}
+
+
 geom::Point * geom::Polygon::center() const{
   geom::Point *p = new Point();
   center(p);

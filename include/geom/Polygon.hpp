@@ -44,6 +44,10 @@ class geom::Polygon: public base::Meta {
     // returns the area captured by the polygon
     double area() const;
 
+    // returns/updates a rectangle to contain the bounding box of the polygon
+    geom::Rectangle * bounding_box() const;
+    void bounding_box(geom::Rectangle *r) const;
+
     // returns the center of area for the polygon, or updates the provided
     // point to the center
     geom::Point * center() const;
