@@ -14,6 +14,8 @@ class geom::Polygon: public base::Meta {
   private:
     mutable double area_cached;
     mutable geom::Point center_cached;
+
+  protected:
     geom::Rectangle bbox;
     geom::Point *points;
     uint32_t num_points;

@@ -10,7 +10,7 @@ namespace geom {
 }
 
 class geom::Vector: public base::Meta {
-  private:
+  protected:
     geom::Point origin;
     geom::Point unit;
     double size;
