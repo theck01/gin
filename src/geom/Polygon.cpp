@@ -1,5 +1,4 @@
 #include "../../include/geom/Polygon.hpp"
-#include "../../include/geom/Vector.hpp"
 
 void geom::Polygon::bound(){
   
@@ -180,18 +179,92 @@ bool geom::Polygon::contains(double x, double y) const{
 }
 
 
-int8_t geom::Polygon::orientation() const{
-  if(signed_area() < 0) return -1;
-  return 1;
-}
-
-
 bool geom::Polygon::intersects(const geom::Polygon *p) const{
   uint32_t i;
   for(i=0; i<num_points; i++){
     if(p->contains(&(points[i]))) return true;
   }
   return false;
+}
+
+
+double geom::Polygon::moment_area_in_x() const{
+
+  uint32_t i;
+  double sum, tri_area, edge_comp;
+  // offset of edge from centroid of shape
+  double x1_off, x2_off, y1_off, y2_off; 
+  geom::Point c;
+
+  sum = 0;
+  center(&c);
+
+  // incrementally compute moment of area sum for x for first n-1 edges
+  for(i=0; i<num_points-1; i++){
+    x1_off = points[i].x - c.x;
+    x2_off = points[i+1].x - c.x;
+    y1_off = points[i].y - c.y;
+    y2_off = points[i+1].y - c.y;
+
+    tri_area = x1_off*y2_off - x2_off*y1_off;
+    edge_comp = x1_off*x1_off + x1_off*x2_off + x2_off*x2_off;
+    sum += tri_area * edge_comp;
+  }
+
+  // add final edge to sum
+  x1_off = points[i].x - c.x;
+  x2_off = points[0].x - c.x;
+  y1_off = points[i].y - c.y;
+  y2_off = points[0].y - c.y;
+
+  tri_area = x1_off*y2_off - x2_off*y1_off;
+  edge_comp = x1_off*x1_off + x1_off*x2_off + x2_off*x2_off;
+  sum += tri_area * edge_comp;
+
+  return sum/12;
+}
+
+
+double geom::Polygon::moment_area_in_y() const{
+
+  uint32_t i;
+  double sum, tri_area, edge_comp;
+  // offset of edge from centroid of shape
+  double x1_off, x2_off, y1_off, y2_off; 
+  geom::Point c;
+
+  sum = 0;
+  center(&c);
+
+  // incrementally compute moment of area sum for x for first n-1 edges
+  for(i=0; i<num_points-1; i++){
+    x1_off = points[i].x - c.x;
+    x2_off = points[i+1].x - c.x;
+    y1_off = points[i].y - c.y;
+    y2_off = points[i+1].y - c.y;
+
+    tri_area = x1_off*y2_off - x2_off*y1_off;
+    edge_comp = y1_off*y1_off + y1_off*y2_off + y2_off*y2_off;
+    sum += tri_area * edge_comp;
+  }
+
+  // add final edge to sum
+  x1_off = points[i].x - c.x;
+  x2_off = points[0].x - c.x;
+  y1_off = points[i].y - c.y;
+  y2_off = points[0].y - c.y;
+
+  tri_area = x1_off*y2_off - x2_off*y1_off;
+  edge_comp = y1_off*y1_off + y1_off*y2_off + y2_off*y2_off;
+  sum += tri_area * edge_comp;
+
+  return sum/12;
+}
+
+
+int8_t geom::Polygon::orientation() const{
+  if(signed_area() < 0) return -1;
+  return 1;
 }
 
 

@@ -59,12 +59,17 @@ class geom::Polygon: public base::Meta {
     bool contains(const geom::Point *p) const;
     bool contains(double x, double y) const;
 
+    // returns true if the Polygon and argument Polygon p overlap
+    bool intersects(const geom::Polygon *p) const;
+
+    // moment of area about the x and y axis intersecting the centroid of the
+    // polygon
+    double moment_area_in_x() const;
+    double moment_area_in_y() const;
+
     // returns the orientation of the points in the polygon, either positive
     // (counterclockwise, +1) or negative (clockwise, -1)
     int8_t orientation() const;
-
-    // returns true if the Polygon and argument Polygon p overlap
-    bool intersects(const geom::Polygon *p) const;
 
     // print the polygon to stderr, for debug
     void print() const;

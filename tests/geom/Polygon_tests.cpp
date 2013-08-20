@@ -62,6 +62,10 @@ int main(){
   assert(triangle->contains(-1.01,0.001));
   assert(!triangle->contains(-1.76,0.5));
   assert(!triangle->contains(-1.5,-0.001));
+
+  // test moment of area methods
+  assert(fabs(square->moment_area_in_x() - 1.0/12) < 0.001);
+  assert(fabs(square->moment_area_in_y() - 1.0/12) < 0.001);
   
   // test orientation method
   assert(square->orientation() == 1);
