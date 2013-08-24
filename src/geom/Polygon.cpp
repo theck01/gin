@@ -19,12 +19,12 @@ void geom::Polygon::bound(){
 
 
 void geom::Polygon::clear_cache(){
-  area_cached = INFINITY;
-  center_cached.x = INFINITY;
-  center_cached.y = INFINITY;
-  x_moment_cached = INFINITY;
-  y_moment_cached = INFINITY;
-  polar_moment_cached = INFINITY;
+  area_cached = NAN;
+  center_cached.x = NAN;
+  center_cached.y = NAN;
+  x_moment_cached = NAN;
+  y_moment_cached = NAN;
+  polar_moment_cached = NAN;
 }
 
 
@@ -51,7 +51,7 @@ double geom::Polygon::signed_area() const{
   uint32_t i;
   double sum = 0;
 
-  if(area_cached != INFINITY) return area_cached;
+  if(!isnan(area_cached)) return area_cached;
 
   for(i=0; i<num_points-1; i++)
     sum += points[i].x*points[i+1].y - points[i+1].x*points[i].y;
@@ -114,7 +114,7 @@ void geom::Polygon::center(geom::Point *p) const{
   double intermediate = 0;
 
   // return cached value if possible
-  if(center_cached.x < INFINITY || center_cached.y < INFINITY){
+  if(!isnan(center_cached.x) && !isnan(center_cached.y)){
     p->x = center_cached.x;
     p->y = center_cached.y;
     return;
@@ -199,7 +199,7 @@ double geom::Polygon::moment_area_in_x() const{
   double x1_off, x2_off, y1_off, y2_off; 
   geom::Point c;
 
-  if(x_moment_cached != INFINITY) return x_moment_cached;
+  if(!isnan(x_moment_cached)) return x_moment_cached;
 
   sum = 0;
   center(&c);
@@ -239,7 +239,7 @@ double geom::Polygon::moment_area_in_y() const{
   double x1_off, x2_off, y1_off, y2_off; 
   geom::Point c;
 
-  if(y_moment_cached != INFINITY) return y_moment_cached;
+  if(!isnan(y_moment_cached)) return y_moment_cached;
 
   sum = 0;
   center(&c);
@@ -272,7 +272,7 @@ double geom::Polygon::moment_area_in_y() const{
 
 
 double geom::Polygon::moment_area_polar() const{
-  if(polar_moment_cached != INFINITY) return polar_moment_cached;
+  if(!isnan(polar_moment_cached)) return polar_moment_cached;
   polar_moment_cached = moment_area_in_x() + moment_area_in_y();
   return polar_moment_cached;
 }
