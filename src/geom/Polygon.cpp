@@ -22,6 +22,9 @@ void geom::Polygon::clear_cache(){
   area_cached = INFINITY;
   center_cached.x = INFINITY;
   center_cached.y = INFINITY;
+  x_moment_cached = INFINITY;
+  y_moment_cached = INFINITY;
+  polar_moment_cached = INFINITY;
 }
 
 
@@ -57,7 +60,7 @@ double geom::Polygon::signed_area() const{
 
   // update cache
   area_cached = sum/2;
-  return signed_area();
+  return area_cached;
 }
 
 
@@ -196,6 +199,8 @@ double geom::Polygon::moment_area_in_x() const{
   double x1_off, x2_off, y1_off, y2_off; 
   geom::Point c;
 
+  if(x_moment_cached != INFINITY) return x_moment_cached;
+
   sum = 0;
   center(&c);
 
@@ -221,7 +226,8 @@ double geom::Polygon::moment_area_in_x() const{
   edge_comp = x1_off*x1_off + x1_off*x2_off + x2_off*x2_off;
   sum += tri_area * edge_comp;
 
-  return sum/12;
+  x_moment_cached = sum/12;
+  return x_moment_cached;
 }
 
 
@@ -232,6 +238,8 @@ double geom::Polygon::moment_area_in_y() const{
   // offset of edge from centroid of shape
   double x1_off, x2_off, y1_off, y2_off; 
   geom::Point c;
+
+  if(y_moment_cached != INFINITY) return y_moment_cached;
 
   sum = 0;
   center(&c);
@@ -258,7 +266,15 @@ double geom::Polygon::moment_area_in_y() const{
   edge_comp = y1_off*y1_off + y1_off*y2_off + y2_off*y2_off;
   sum += tri_area * edge_comp;
 
-  return sum/12;
+  y_moment_cached = sum/12;
+  return y_moment_cached;
+}
+
+
+double geom::Polygon::moment_area_polar() const{
+  if(polar_moment_cached != INFINITY) return polar_moment_cached;
+  polar_moment_cached = moment_area_in_x() + moment_area_in_y();
+  return polar_moment_cached;
 }
 
 
@@ -300,6 +316,7 @@ void geom::Polygon::rotate(double x, double y, double rad){
   uint32_t i;
   double rx, ry, sine, cosine;
   double a = area_cached;
+  double pm = polar_moment_cached;
 
   sine = sin(rad);
   cosine = cos(rad);
@@ -314,6 +331,7 @@ void geom::Polygon::rotate(double x, double y, double rad){
   bound();
   clear_cache();
   a = area_cached;
+  polar_moment_cached = pm;
 }
 
 

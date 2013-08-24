@@ -66,6 +66,8 @@ int main(){
   // test moment of area methods
   assert(fabs(square->moment_area_in_x() - 1.0/12) < 0.001);
   assert(fabs(square->moment_area_in_y() - 1.0/12) < 0.001);
+  assert(fabs(square->moment_area_polar() - square->moment_area_in_x() -
+              square->moment_area_in_y()) < 0.001);
   
   // test orientation method
   assert(square->orientation() == 1);

@@ -14,6 +14,9 @@ class geom::Polygon: public base::Meta {
   private:
     mutable double area_cached;
     mutable geom::Point center_cached;
+    mutable double x_moment_cached;
+    mutable double y_moment_cached;
+    mutable double polar_moment_cached;
 
   protected:
     geom::Rectangle bbox;
@@ -66,6 +69,9 @@ class geom::Polygon: public base::Meta {
     // polygon
     double moment_area_in_x() const;
     double moment_area_in_y() const;
+
+    // moment of area about the polar (z) axis
+    double moment_area_polar() const;
 
     // returns the orientation of the points in the polygon, either positive
     // (counterclockwise, +1) or negative (clockwise, -1)
