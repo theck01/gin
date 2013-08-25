@@ -87,17 +87,15 @@ $(BIN_PHYSICS)/%.o: $(SRC_PHYSICS)/%.cpp $(INCLUDE_PHYSICS)/%.hpp
 	$(CC) $(OFLAGS) $< -o $@
 
 # Build base tests
-$(BIN_TESTS_BASE)/%_tests: $(BIN_BASE)/%.o $(TESTS_BASE)/%_tests.cpp
+$(BIN_TESTS_BASE)/%_tests: $(OBJECTS) $(TESTS_BASE)/%_tests.cpp
 	$(CC) $(CFLAGS) $^ -o $@
 
 # Build geom tests
-$(BIN_TESTS_GEOM)/%_tests: $(BIN_GEOM)/%.o $(BIN_BASE)/Meta.o \
-	$(TESTS_GEOM)/%_tests.cpp
+$(BIN_TESTS_GEOM)/%_tests: $(OBJECTS) $(TESTS_GEOM)/%_tests.cpp
 	$(CC) $(CFLAGS) $^ -o $@
 
 # Build physics tests
-$(BIN_TESTS_PHYSICS)/%_tests: $(BIN_PHYSICS)/%.o $(BIN_BASE)/Meta.o \
-	$(BIN_GEOM)/Polygon.o $(TESTS_PHYSICS)/%_tests.cpp
+$(BIN_TESTS_PHYSICS)/%_tests: $(OBJECTS) $(TESTS_PHYSICS)/%_tests.cpp
 	$(CC) $(CFLAGS) $^ -o $@
 
 # clean build
