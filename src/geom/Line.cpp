@@ -79,6 +79,24 @@ bool geom::Line::point_of_intersection(const geom::Line *l,
 }
                                         
 
+void geom::Line::set(const geom::Line *l){
+  set(l->p1.x, l->p1.y, l->p2.x, l->p2.y);
+}
+
+
+void geom::Line::set(const geom::Point *p, const geom::Point *q){
+  set(p->x, p->y, q->x, q->y);
+}
+
+
+void geom::Line::set(double x0, double y0, double x1, double y1){
+  p1.x = x0;
+  p1.y = y0;
+  p2.x = x1;
+  p2.y = y1;
+}
+
+
 double geom::Line::slope() const{
   return (p2.y - p1.y)/(p2.x - p1.x);
 }

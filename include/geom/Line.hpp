@@ -28,6 +28,11 @@ class geom::Line: public base::Meta {
     geom::Point * point_of_intersection(const geom::Line *l) const;
     bool point_of_intersection(const geom::Line *l, geom::Point *p) const;
 
+    // convenience methods for setting values of a line en mass
+    void set(const geom::Line *l);
+    void set(const geom::Point *p, const geom::Point *q);
+    void set(double x0, double y0, double x1, double y1);
+
     // returns the slope of the line
     double slope() const;
 

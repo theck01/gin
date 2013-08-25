@@ -7,20 +7,9 @@ int main(){
   geom::Point p, result;
 
   // setup test lines
-  l1.p1.x = -1;
-  l1.p1.y = -1;
-  l1.p2.x = 1;
-  l1.p2.y = 1;
-
-  l2.p1.x = 1;
-  l2.p1.y = 0;
-  l2.p2.x = 0;
-  l2.p2.y = 1;
-
-  l3.p1.x = -0.25;
-  l3.p1.y = -1;
-  l3.p2.x = -0.25;
-  l3.p2.y = 1;
+  l1.set(-1,-1,1,1);
+  l2.set(1,0,0,1);
+  l3.set(-0.25,-1,-0.25,1);
 
 
   // test slope
