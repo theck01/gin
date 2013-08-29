@@ -104,6 +104,7 @@ double geom::Line::slope() const{
 
 double geom::Line::y_intersect() const {
   double y = p1.y - slope()*p1.x;
-  if(isinf(y)) return NAN;
+  if(fabs(slope()) < geom::ERROR_MARGIN) return p1.y;
+  if(isinf(y) || isnan(y)) return NAN;
   return y;
 }
