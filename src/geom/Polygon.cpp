@@ -4,16 +4,13 @@ void geom::Polygon::bound(){
   
   uint32_t i;
 
-  bbox.bot_left.x = INFINITY;
-  bbox.bot_left.y = INFINITY;
-  bbox.top_right.x = -INFINITY;
-  bbox.top_right.y = -INFINITY;
+  bbox.set(INFINITY, INFINITY, -INFINITY, -INFINITY);
 
-  for(i=0; i<num_points; i++){
-    if(bbox.bot_left.x > points[i].x) bbox.bot_left.x = points[i].x;
-    if(bbox.bot_left.y > points[i].y) bbox.bot_left.y = points[i].y;
-    if(bbox.top_right.x < points[i].x) bbox.top_right.x = points[i].x;
-    if(bbox.top_right.y < points[i].y) bbox.top_right.y = points[i].y;
+  for(i=0; i<num_verticies; i++){
+    if(bbox.bot_left.x > verticies[i].x) bbox.bot_left.x = verticies[i].x;
+    if(bbox.bot_left.y > verticies[i].y) bbox.bot_left.y = verticies[i].y;
+    if(bbox.top_right.x < verticies[i].x) bbox.top_right.x = verticies[i].x;
+    if(bbox.top_right.y < verticies[i].y) bbox.top_right.y = verticies[i].y;
   }
 }
 
@@ -35,14 +32,16 @@ void geom::Polygon::init(const geom::Point parray[], uint32_t point_count){
   // initialize cache values by clearing garbage
   clear_cache();
 
-  num_points = point_count;
-  points = new geom::Point[num_points];
-  for(i=0; i<num_points; i++){
-    points[i].x = parray[i].x;
-    points[i].y = parray[i].y;
+  num_verticies = point_count;
+  verticies = new geom::Point[num_verticies];
+  sides = new geom::Line[num_verticies];
+  for(i=0; i<num_verticies; i++){
+    verticies[i].x = parray[i].x;
+    verticies[i].y = parray[i].y;
   }
 
   bound();
+  update_sides();
 }
 
 
@@ -53,14 +52,21 @@ double geom::Polygon::signed_area() const{
 
   if(!isnan(area_cached)) return area_cached;
 
-  for(i=0; i<num_points-1; i++)
-    sum += points[i].x*points[i+1].y - points[i+1].x*points[i].y;
+  for(i=0; i<num_verticies-1; i++)
+    sum += verticies[i].x*verticies[i+1].y - verticies[i+1].x*verticies[i].y;
 
-  sum += points[i].x*points[0].y - points[0].x*points[i].y;
+  sum += verticies[i].x*verticies[0].y - verticies[0].x*verticies[i].y;
 
   // update cache
   area_cached = sum/2;
   return area_cached;
+}
+
+
+void geom::Polygon::update_sides(){
+  uint32_t i;
+  for(i=0; i<num_verticies; i++)
+    sides[i].set(&verticies[i], &verticies[(i+1)%num_verticies]);
 }
 
 
@@ -70,12 +76,13 @@ geom::Polygon::Polygon(const geom::Point parray[], uint32_t point_count){
 
 
 geom::Polygon::Polygon(const geom::Polygon *p){
-  init(p->points, p->num_points);
+  init(p->verticies, p->num_verticies);
 }
 
 
 geom::Polygon::~Polygon(){
-  delete[] points;
+  delete[] verticies;
+  delete[] sides;
 }
 
 
@@ -85,17 +92,14 @@ double geom::Polygon::area() const{
 
 
 geom::Rectangle * geom::Polygon::bounding_box() const{
-  geom::Rectangle *r = new geom::Rectangle();
+  geom::Rectangle *r = new geom::Rectangle(bbox);
   bounding_box(r);
   return r;
 }
 
 
 void geom::Polygon::bounding_box(geom::Rectangle *r) const{
-  r->bot_left.x = bbox.bot_left.x;
-  r->bot_left.y = bbox.bot_left.y;
-  r->top_right.x = bbox.top_right.x;
-  r->top_right.y = bbox.top_right.y;
+  r->set(&bbox);
 }
 
 
@@ -120,15 +124,17 @@ void geom::Polygon::center(geom::Point *p) const{
     return;
   }
 
-  for(i=0; i<num_points-1; i++){
-    intermediate = points[i].x*points[i+1].y - points[i+1].x*points[i].y;
-    x_sum += (points[i].x + points[i+1].x)*intermediate;
-    y_sum += (points[i].y + points[i+1].y)*intermediate;
+  for(i=0; i<num_verticies-1; i++){
+    intermediate = verticies[i].x*verticies[i+1].y - 
+                   verticies[i+1].x*verticies[i].y;
+    x_sum += (verticies[i].x + verticies[i+1].x)*intermediate;
+    y_sum += (verticies[i].y + verticies[i+1].y)*intermediate;
   }
   
-  intermediate = points[i].x*points[0].y - points[0].x*points[i].y;
-  x_sum += (points[i].x + points[0].x)*intermediate;
-  y_sum += (points[i].y + points[0].y)*intermediate;
+  intermediate = verticies[i].x*verticies[0].y - 
+                 verticies[0].x*verticies[i].y;
+  x_sum += (verticies[i].x + verticies[0].x)*intermediate;
+  y_sum += (verticies[i].y + verticies[0].y)*intermediate;
 
   // update cache
   center_cached.x = x_sum/(6*signed_area());
@@ -139,54 +145,84 @@ void geom::Polygon::center(geom::Point *p) const{
 
 
 bool geom::Polygon::contains(const geom::Point *p) const{
-  return contains(p->x, p->y);
+  uint32_t i, inter_count;
+  geom::Line ray;
+
+  // do quick bounding box check first
+  if(!bbox.contains(p)) return false;
+
+  // ray cast, if number of ray intersections is odd then point is inside
+  // polygon
+  inter_count = 0;
+  ray.set(-INFINITY, p->y, p->x, p->y);
+
+  for(i=0; i<num_verticies; i++){
+    if(sides[i].intersects(&ray)){
+      inter_count++;
+      //std::cout << "Side " << i << " intersected by ray" << std::endl;
+      //std::cout << sides[i].p1.x << "," << sides[i].p1.y << "  ";
+      //std::cout << sides[i].p2.x << "," << sides[i].p2.y << std::endl;
+    }
+  }
+    
+
+  if(inter_count%2) return true;
+  return false;
 }
 
 
 bool geom::Polygon::contains(double x, double y) const{
+  geom::Point p;
+  p.x = x;
+  p.y = y;
+  return contains(&p);
+}
 
-  uint32_t i, inter;
-  double slope, x_at_y;
 
-  // quick bounding box check
-  if(x < bbox.bot_left.x || y < bbox.bot_left.y || x > bbox.top_right.x ||
-     y > bbox.top_right.y){
-    return false;
-  }
+bool geom::Polygon::intersects(const geom::Line *l) const{
+  uint32_t i;
 
-  // detailed ray casting check
-  inter = 0;
-  // for all line segments in perimeter of polygon but the last
-  for(i=0; i<num_points-1; i++){
-    //horizontal ray check from point to x -> -INFINITY
-    if((y <= points[i].y && y >= points[i+1].y) ||
-       (y >= points[i].y && y <= points[i+1].y)){
-      slope = (points[i+1].y - points[i].y)/(points[i+1].x - points[i].x);
-      x_at_y = (y - points[i].y)/slope + points[i].x;
-      if(x > x_at_y) inter++;
-    }
-  }
+  // initial bounding box check
+  if(!bbox.intersects(l)) return false;
 
-  //horizontal ray check from point to x -> -INFINITY, for final segment
-  if((y <= points[i].y && y >= points[0].y) ||
-     (y >= points[i].y && y <= points[0].y)){
-    slope = (points[0].y - points[i].y)/(points[0].x - points[i].x);
-    x_at_y = (y - points[i].y)/slope + points[i].x;
-    if(x > x_at_y) inter++;
-  }
+  if(contains(&l->p1) || contains(&l->p2)) return true;
 
-  // if the number of interections of perimeter line segments is odd then
-  // the point must lie in the polygon
-  if(inter%2) return true;
+  for(i=0; i<num_verticies; i++)
+    if(sides[i].intersects(l)) return true;
+
+  return false;
+}
+
+
+bool geom::Polygon::intersects(const geom::Rectangle *r) const{
+  uint32_t i;
+
+  // initial bounding box check
+  if(!bbox.intersects(r)) return false;
+
+  if(contains(&r->bot_left) || contains(&r->top_right)) return true;
+
+  for(i=0; i<num_verticies; i++)
+    if(r->intersects(&sides[i])) return true;
+
   return false;
 }
 
 
 bool geom::Polygon::intersects(const geom::Polygon *p) const{
   uint32_t i;
-  for(i=0; i<num_points; i++){
-    if(p->contains(&(points[i]))) return true;
-  }
+
+  // initial bounding box check
+  if(!p->intersects(&bbox)) return false;
+
+  // check to see if any verticie is within the polygon
+  for(i=0; i<num_verticies; i++)
+    if(p->contains(&verticies[i])) return true;
+
+  // check to see if any lines intersect the polygon
+  for(i=0; i<num_verticies; i++)
+    if(p->intersects(&sides[i])) return true;
+
   return false;
 }
 
@@ -205,11 +241,11 @@ double geom::Polygon::moment_area_in_x() const{
   center(&c);
 
   // incrementally compute moment of area sum for x for first n-1 edges
-  for(i=0; i<num_points-1; i++){
-    x1_off = points[i].x - c.x;
-    x2_off = points[i+1].x - c.x;
-    y1_off = points[i].y - c.y;
-    y2_off = points[i+1].y - c.y;
+  for(i=0; i<num_verticies-1; i++){
+    x1_off = verticies[i].x - c.x;
+    x2_off = verticies[i+1].x - c.x;
+    y1_off = verticies[i].y - c.y;
+    y2_off = verticies[i+1].y - c.y;
 
     tri_area = x1_off*y2_off - x2_off*y1_off;
     edge_comp = x1_off*x1_off + x1_off*x2_off + x2_off*x2_off;
@@ -217,10 +253,10 @@ double geom::Polygon::moment_area_in_x() const{
   }
 
   // add final edge to sum
-  x1_off = points[i].x - c.x;
-  x2_off = points[0].x - c.x;
-  y1_off = points[i].y - c.y;
-  y2_off = points[0].y - c.y;
+  x1_off = verticies[i].x - c.x;
+  x2_off = verticies[0].x - c.x;
+  y1_off = verticies[i].y - c.y;
+  y2_off = verticies[0].y - c.y;
 
   tri_area = x1_off*y2_off - x2_off*y1_off;
   edge_comp = x1_off*x1_off + x1_off*x2_off + x2_off*x2_off;
@@ -245,11 +281,11 @@ double geom::Polygon::moment_area_in_y() const{
   center(&c);
 
   // incrementally compute moment of area sum for x for first n-1 edges
-  for(i=0; i<num_points-1; i++){
-    x1_off = points[i].x - c.x;
-    x2_off = points[i+1].x - c.x;
-    y1_off = points[i].y - c.y;
-    y2_off = points[i+1].y - c.y;
+  for(i=0; i<num_verticies-1; i++){
+    x1_off = verticies[i].x - c.x;
+    x2_off = verticies[i+1].x - c.x;
+    y1_off = verticies[i].y - c.y;
+    y2_off = verticies[i+1].y - c.y;
 
     tri_area = x1_off*y2_off - x2_off*y1_off;
     edge_comp = y1_off*y1_off + y1_off*y2_off + y2_off*y2_off;
@@ -257,10 +293,10 @@ double geom::Polygon::moment_area_in_y() const{
   }
 
   // add final edge to sum
-  x1_off = points[i].x - c.x;
-  x2_off = points[0].x - c.x;
-  y1_off = points[i].y - c.y;
-  y2_off = points[0].y - c.y;
+  x1_off = verticies[i].x - c.x;
+  x2_off = verticies[0].x - c.x;
+  y1_off = verticies[i].y - c.y;
+  y2_off = verticies[0].y - c.y;
 
   tri_area = x1_off*y2_off - x2_off*y1_off;
   edge_comp = y1_off*y1_off + y1_off*y2_off + y2_off*y2_off;
@@ -287,9 +323,9 @@ int8_t geom::Polygon::orientation() const{
 void geom::Polygon::print() const{
   uint32_t i;
   std::cerr << "Polygon:" << std::endl;
-  std::cerr << "    points:" << std::endl;
-  for(i=0; i<num_points; i++){
-    std::cerr << "    (" << points[i].x << "," << points[i].y << ")";
+  std::cerr << "    verticies:" << std::endl;
+  for(i=0; i<num_verticies; i++){
+    std::cerr << "    (" << verticies[i].x << "," << verticies[i].y << ")";
     std::cerr << std::endl;  
   }
 }
@@ -321,15 +357,16 @@ void geom::Polygon::rotate(double x, double y, double rad){
   sine = sin(rad);
   cosine = cos(rad);
 
-  for(i=0; i<num_points; i++){
-    rx = cosine*(points[i].x - x) - sine*(points[i].y - y);
-    ry = sine*(points[i].x - x) + cosine*(points[i].y - y);
-    points[i].x = rx + x;
-    points[i].y = ry + y;
+  for(i=0; i<num_verticies; i++){
+    rx = cosine*(verticies[i].x - x) - sine*(verticies[i].y - y);
+    ry = sine*(verticies[i].x - x) + cosine*(verticies[i].y - y);
+    verticies[i].x = rx + x;
+    verticies[i].y = ry + y;
   }
   
   bound();
   clear_cache();
+  update_sides();
   a = area_cached;
   polar_moment_cached = pm;
 }
@@ -355,12 +392,13 @@ void geom::Polygon::scale(const geom::Point *center, double factor){
 
 void geom::Polygon::scale(double x, double y, double factor){
   uint32_t i;
-  for(i=0; i<num_points; i++){
-    points[i].x = factor*(points[i].x - x) + x;
-    points[i].y = factor*(points[i].y - y) + y;
+  for(i=0; i<num_verticies; i++){
+    verticies[i].x = factor*(verticies[i].x - x) + x;
+    verticies[i].y = factor*(verticies[i].y - y) + y;
   }
   bound();
   clear_cache();
+  update_sides();
 }
 
 
@@ -371,9 +409,9 @@ void geom::Polygon::translate(const geom::Point *shift){
 
 void geom::Polygon::translate(double x, double y){
   uint32_t i;
-  for(i=0; i<num_points; i++){
-    points[i].x += x;
-    points[i].y += y;
+  for(i=0; i<num_verticies; i++){
+    verticies[i].x += x;
+    verticies[i].y += y;
   }
 
   // translate bounding box
@@ -381,6 +419,8 @@ void geom::Polygon::translate(double x, double y){
   bbox.top_right.x += x;
   bbox.bot_left.y += y;
   bbox.top_right.y += y;
+
+  update_sides();
 
   // translate cached center, area is unaffected
   center_cached.x += x;

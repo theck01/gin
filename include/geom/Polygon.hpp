@@ -20,8 +20,9 @@ class geom::Polygon: public base::Meta {
 
   protected:
     geom::Rectangle bbox;
-    geom::Point *points;
-    uint32_t num_points;
+    geom::Point *verticies;
+    geom::Line *sides;
+    uint32_t num_verticies;
 
     // updates the internal bounding box of the polygon
     void bound();
@@ -35,9 +36,12 @@ class geom::Polygon: public base::Meta {
     // returns the unsigned area of the polygon
     double signed_area() const;
 
+    // updates the values of the sides in the polygon
+    void update_sides();
+
 
   public:
-    // Constructor, builds polygon from an array of points
+    // Constructor, builds polygon from an array of verticies
     Polygon(const geom::Point parray[], uint32_t point_count);
 
     // Copy Constructor
@@ -62,6 +66,12 @@ class geom::Polygon: public base::Meta {
     bool contains(const geom::Point *p) const;
     bool contains(double x, double y) const;
 
+    // returns true if the polygon and the line intersect, or the polygon
+    // contains the line
+    bool intersects(const geom::Line *l) const;
+    // returns true if the polygon and the rectangle intersect, or the
+    // polygon contains the rectangle
+    bool intersects(const geom::Rectangle *r) const;
     // returns true if the Polygon and argument Polygon p overlap
     bool intersects(const geom::Polygon *p) const;
 
@@ -73,8 +83,8 @@ class geom::Polygon: public base::Meta {
     // moment of area about the polar (z) axis
     double moment_area_polar() const;
 
-    // returns the orientation of the points in the polygon, either positive
-    // (counterclockwise, +1) or negative (clockwise, -1)
+    // returns the orientation of the verticies in the polygon, 
+    // either positive (counterclockwise, +1) or negative (clockwise, -1)
     int8_t orientation() const;
 
     // print the polygon to stderr, for debug

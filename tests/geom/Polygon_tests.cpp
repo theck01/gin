@@ -29,15 +29,15 @@ int main(){
   triangle = new geom::Polygon(triangle_points, 3);
 
   // test area method, with some padding to accomadate for the double result
-  assert(abs(square->area() - 1) < 0.001);
-  assert(abs(triangle->area() - 0.5) < 0.001);
+  assert(abs(square->area() - 1) < geom::ERROR_MARGIN);
+  assert(abs(triangle->area() - 0.5) < geom::ERROR_MARGIN);
 
   // test bounding box method
   square->bounding_box(&bbox);
-  assert(fabs(bbox.bot_left.x) < 0.001);
-  assert(fabs(bbox.bot_left.y) < 0.001);
-  assert(fabs(bbox.top_right.x - 1) < 0.001);
-  assert(fabs(bbox.top_right.y - 1) < 0.001);
+  assert(fabs(bbox.bot_left.x) < geom::ERROR_MARGIN);
+  assert(fabs(bbox.bot_left.y) < geom::ERROR_MARGIN);
+  assert(fabs(bbox.top_right.x - 1) < geom::ERROR_MARGIN);
+  assert(fabs(bbox.top_right.y - 1) < geom::ERROR_MARGIN);
 
   // test the center method
   center =  square->center();
@@ -59,15 +59,15 @@ int main(){
 
   assert(triangle->contains(-1.5,0.5));
   assert(triangle->contains(-1.8,0.01));
-  assert(triangle->contains(-1.01,0.001));
+  assert(triangle->contains(-1.01,geom::ERROR_MARGIN));
   assert(!triangle->contains(-1.76,0.5));
-  assert(!triangle->contains(-1.5,-0.001));
+  assert(!triangle->contains(-1.5,-geom::ERROR_MARGIN));
 
   // test moment of area methods
-  assert(fabs(square->moment_area_in_x() - 1.0/12) < 0.001);
-  assert(fabs(square->moment_area_in_y() - 1.0/12) < 0.001);
+  assert(fabs(square->moment_area_in_x() - 1.0/12) < geom::ERROR_MARGIN);
+  assert(fabs(square->moment_area_in_y() - 1.0/12) < geom::ERROR_MARGIN);
   assert(fabs(square->moment_area_polar() - square->moment_area_in_x() -
-              square->moment_area_in_y()) < 0.001);
+              square->moment_area_in_y()) < geom::ERROR_MARGIN);
   
   // test orientation method
   assert(square->orientation() == 1);
@@ -77,7 +77,7 @@ int main(){
   triangle->translate(1,0);
   assert(!triangle->contains(-1.5,0.5));
   assert(triangle->contains(-0.5,0.5));
-  assert(abs(triangle->area() - 0.5) < 0.001);
+  assert(abs(triangle->area() - 0.5) < geom::ERROR_MARGIN);
 
   // test scaling
   assert(!square->contains(-0.1,-0.1));
@@ -103,7 +103,7 @@ int main(){
   assert(square->contains(0.01,0.01));
   assert(!square->contains(1.01,0.5));
   assert(!square->contains(-0.01,0.5));
-  assert(abs(square->area() - 1) < 0.001);
+  assert(abs(square->area() - 1) < geom::ERROR_MARGIN);
 
   square->rotate(0, 0, -M_PI/2);
   assert(square->contains(0.5,-0.5));
@@ -111,7 +111,7 @@ int main(){
   assert(square->contains(0.01,-0.01));
   assert(!square->contains(1.01,-0.5));
   assert(!square->contains(-0.01,-0.5));
-  assert(abs(square->area() - 1) < 0.001);
+  assert(abs(square->area() - 1) < geom::ERROR_MARGIN);
 
   // test intersects
   assert(!square->intersects(triangle));
@@ -120,7 +120,7 @@ int main(){
 
   // test copy
   p = new geom::Polygon(square);
-  assert(abs(p->area() - 1) < 0.001);
+  assert(abs(p->area() - 1) < geom::ERROR_MARGIN);
   p->translate(10,10);
   assert(square->intersects(triangle));
   assert(!square->intersects(p));
