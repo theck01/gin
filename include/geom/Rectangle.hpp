@@ -27,6 +27,13 @@ class geom::Rectangle: public base::Meta {
     // completely within the other
     bool intersects(const geom::Rectangle *r) const;
 
+    // returns a vector of lines contained within the bounding rectangle,
+    // or adds lines to the end of existing vector v
+    std::vector<geom::Line> * lines_intersected(const geom::Line ls[],
+                                                uint32_t num_lines) const;
+    void lines_intersected(std::vector<geom::Line> *v, const geom::Line ls[],
+                           uint32_t num_lines) const;
+
     // convenience set methods for rectangle points
     void set(const geom::Rectangle *r);
     void set(const geom::Point *p, const geom::Point *q);

@@ -57,8 +57,25 @@ bool geom::Rectangle::intersects(const geom::Rectangle *r) const{
 
   return false;
 }
-                                        
 
+
+std::vector<geom::Line> * geom::Rectangle::lines_intersected(
+    const geom::Line ls[], uint32_t num_lines) const{
+  std::vector<geom::Line> *v = new std::vector<geom::Line>();
+  lines_intersected(v, ls, num_lines);
+  return v;
+}
+
+
+void geom::Rectangle::lines_intersected(std::vector<geom::Line> *v,
+                                        const geom::Line ls[],
+                                        uint32_t num_lines) const{
+  uint32_t i;
+  for(i=0; i<num_lines; i++)
+    if(intersects(&ls[i])) v->push_back(ls[i]);
+}
+
+                                        
 void geom::Rectangle::set(const geom::Rectangle *r){
   set(r->bot_left.x, r->bot_left.y, r->top_right.x, r->top_right.y);
 }
