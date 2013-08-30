@@ -22,6 +22,11 @@ class geom::Line: public base::Meta {
     // returns true if the two lines intersect
     bool intersects(const geom::Line *l) const;
 
+    // returns the midpoint of the line
+    geom::Point * midpoint() const;
+    void midpoint(geom::Point *p) const;
+
+
     // returns the point of intersection (if any) between the new lines
     // If lines do not intersect returns NULL (or false, depending on the
     // method), and argument point is set to (NAN, NAN)

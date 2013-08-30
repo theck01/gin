@@ -57,7 +57,6 @@ int main(){
   assert(l4.contains(&p));
 
 
-
   // test intersects
   assert(l1.intersects(&l2));
   assert(l2.intersects(&l1));
@@ -71,6 +70,24 @@ int main(){
   assert(!l4.intersects(&l2));
   assert(l3.intersects(&l4));
   assert(l4.intersects(&l3));
+
+
+  // test midpoint
+  l1.midpoint(&result);
+  assert(fabs(result.x) < geom::ERROR_MARGIN);
+  assert(fabs(result.y) < geom::ERROR_MARGIN);
+
+  l2.midpoint(&result);
+  assert(fabs(result.x - 0.5) < geom::ERROR_MARGIN);
+  assert(fabs(result.y - 0.5) < geom::ERROR_MARGIN);
+
+  l3.midpoint(&result);
+  assert(fabs(result.x + 0.25) < geom::ERROR_MARGIN);
+  assert(fabs(result.y) < geom::ERROR_MARGIN);
+
+  l4.midpoint(&result);
+  assert(isnan(result.x));
+  assert(isnan(result.y));
 
 
   // test point of intersection

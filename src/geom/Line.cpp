@@ -32,6 +32,34 @@ bool geom::Line::intersects(const geom::Line *l) const{
 }
 
 
+geom::Point * geom::Line::midpoint() const{
+  geom::Point *p = new geom::Point();
+  midpoint(p);
+  return p;
+}
+
+
+void geom::Line::midpoint(geom::Point *p) const{
+
+  // if midpoint cannot be determined, set to NAN
+  if(isinf(p1.x) || isnan(p1.x) || isinf(p1.y) || isnan(p1.y) ||
+     isinf(p2.x) || isnan(p2.x) || isinf(p2.y) || isnan(p2.y)){
+    p->x = NAN;
+    p->y = NAN;
+    return;
+  }
+
+  if(isinf(slope())){
+    p->x = p1.x;
+    p->y = p1.y + (p2.y - p1.y)/2;
+    return;
+  }
+
+  p->x = p1.x + (p2.x - p1.x)/2;
+  p->y = slope()*p->x + y_intersect();
+}
+
+
 geom::Point * geom::Line::point_of_intersection(const geom::Line *l) const{
   geom::Point *p = new geom::Point();
   if(point_of_intersection(l, p))
