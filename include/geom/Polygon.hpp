@@ -66,6 +66,13 @@ class geom::Polygon: public base::Meta {
     bool contains(const geom::Point *p) const;
     bool contains(double x, double y) const;
 
+    // adds all points of perimeter intersection with the argument Polgon to
+    // a new vector or the end of the argument vector
+    std::vector<geom::Point> * intersection_points(const geom::Polygon *p) 
+                                                                    const;
+    void intersection_points(const geom::Polygon *p, 
+                             std::vector<geom::Point> *v) const;
+
     // returns true if the polygon and the line intersect, or the polygon
     // contains the line
     bool intersects(const geom::Line *l) const;

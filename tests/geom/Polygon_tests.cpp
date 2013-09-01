@@ -7,6 +7,7 @@ int main(){
   geom::Point triangle_points[4];
   geom::Point *center;
   geom::Rectangle bbox;
+  std::vector<geom::Point> ips;
 
   // initialize points arrays
   square_points[0].x = 0;
@@ -117,6 +118,14 @@ int main(){
   assert(!square->intersects(triangle));
   square->translate(-0.5, 0.5);
   assert(square->intersects(triangle));
+
+  // test intersection_points
+  square->intersection_points(triangle, &ips);
+  assert(ips.size() == 2);
+  assert(fabs(ips[0].x + 0.25) < geom::ERROR_MARGIN);
+  assert(fabs(ips[0].y - 0.5) < geom::ERROR_MARGIN);
+  assert(fabs(ips[1].x + 0.5) < geom::ERROR_MARGIN);
+  assert(fabs(ips[1].y) < geom::ERROR_MARGIN);
 
   // test copy
   p = new geom::Polygon(square);

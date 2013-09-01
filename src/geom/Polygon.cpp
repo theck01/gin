@@ -179,6 +179,33 @@ bool geom::Polygon::contains(double x, double y) const{
 }
 
 
+std::vector<geom::Point> * geom::Polygon::intersection_points(
+                                                const geom::Polygon *p) const{
+  std::vector<geom::Point> *v = new std::vector<geom::Point>();
+  intersection_points(p, v);
+  return v;
+}
+
+
+void geom::Polygon::intersection_points(const geom::Polygon *p,
+                                        std::vector<geom::Point> *v) const{
+  uint32_t i, j, self_num_lines, p_num_lines;
+  geom::Point inter;
+  std::vector<geom::Line> self_lines, p_lines;
+
+  // narrow down lines to test to the fewest possible in O(n) time
+  bbox.lines_intersected(&self_lines, sides, num_verticies);
+  p->bbox.lines_intersected(&p_lines, p->sides, p->num_verticies);
+
+  self_num_lines = self_lines.size();
+  p_num_lines = p_lines.size();
+  for(i=0; i<self_num_lines; i++)
+    for(j=0; j<p_num_lines; j++)
+      if(self_lines[i].point_of_intersection(&p_lines[j], &inter))
+        v->push_back(inter);
+}
+
+
 bool geom::Polygon::intersects(const geom::Line *l) const{
   uint32_t i;
 
