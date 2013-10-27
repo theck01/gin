@@ -5,8 +5,7 @@
 
 
 mesgstr="Setup"
-folders=(bin bin/base bin/geom bin/physics bin/tests bin/tests/base \
-				 bin/tests/geom bin/tests/physics)
+folders=(bin bin/base bin/geom bin/tests bin/tests/base bin/tests/geom)
 
 # for each folder, check if present, if not make it
 for f in ${folders[*]}

@@ -1,1 +1,1 @@
-A 2D game engine written in C++
+A reference counted polygon collision detection library written in C++
